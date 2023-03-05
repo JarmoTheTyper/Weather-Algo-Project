@@ -1,0 +1,2 @@
+Data strukturen behöver kunna plocka ut värden mellan olika index, lämpliga strukturer är ArrayList och TreeMap. Då TreeMap behöver en key vilket inte finns blir ArrayList lämpligt
+
