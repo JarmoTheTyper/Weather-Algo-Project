@@ -17,10 +17,29 @@ public class WeatherDataHandler {
 	 * @param filePath path to file with weather data
 	 * @throws IOException if there is a problem while reading the file
 	 */
-	public void loadData(String filePath) throws IOException {		
-		List<String> fileData = Files.readAllLines(Paths.get(filePath));
 
-		//TODO: Structure data and put it in appropriate data structure
+	public void loadData(String filePath) throws IOException {	//ArrayList
+		List<String> fileData = Files.readAllLines(Paths.get(filePath));
+		List<Data> whetherData = new ArrayList<>(fileData.size());
+
+		for(String s : fileData){
+			String[] attributes = s.split(";");
+			Data data = creatData(attributes);
+			whetherData.add(data);
+		}
+	}
+
+	/**
+	 * Creates an object of Data
+	 * @param attributes Array of String values to be added to the object
+	 * @return object Data with the attributes as values
+	 */
+	private static Data creatData(String[] attributes){
+		String date = attributes[0];
+		String time = attributes[1];
+		String temperature = attributes[2];
+		String quality = attributes[3];
+		return new Data(date, time, temperature, quality);
 	}
 	/**
 	 * Search for average temperature for all dates between the two dates (inclusive).
