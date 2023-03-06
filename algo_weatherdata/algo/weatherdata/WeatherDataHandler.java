@@ -11,6 +11,8 @@ import java.util.*;
  */
 public class WeatherDataHandler {
 
+	TreeMap<LocalDate, Data> whetherData = new TreeMap<>();
+
 	/**
 	 * Load weather data from file.
 	 * 
@@ -18,29 +20,49 @@ public class WeatherDataHandler {
 	 * @throws IOException if there is a problem while reading the file
 	 */
 
-	public void loadData(String filePath) throws IOException {	//ArrayList
+	public void loadData(String filePath) throws IOException {
 		List<String> fileData = Files.readAllLines(Paths.get(filePath));
-		List<Data> whetherData = new ArrayList<>(fileData.size());
 
 		for(String s : fileData){
 			String[] attributes = s.split(";");
-			Data data = creatData(attributes);
-			whetherData.add(data);
+			LocalDate date = LocalDate.parse(attributes[0]);
+
+			if (whetherData.containsKey(date)) {
+				addData(attributes, whetherData.get(date));
+			}
+			else{
+				Data data = createData(attributes);
+				whetherData.put(date, data);
+			}
 		}
 	}
 
 	/**
-	 * Creates an object of Data
-	 * @param attributes Array of String values to be added to the object
-	 * @return object Data with the attributes as values
+	 * Adds values to a Data Object
+	 * @param attributes Array of String values to be added to the Data object
 	 */
-	private static Data creatData(String[] attributes){
-		String date = attributes[0];
+	private static void addData(String[] attributes, Data data){
 		String time = attributes[1];
 		String temperature = attributes[2];
 		String quality = attributes[3];
-		return new Data(date, time, temperature, quality);
+		data.addTime(time);
+		data.addTemperature(temperature);
+		data.addQuality(quality);
 	}
+
+	/**
+	 * Creates an object of Data
+	 * @param attributes Array of String values to be added to the Data object
+	 * @return object Data with the attributes as values
+	 */
+	private static Data createData(String[] attributes) {
+		String time = attributes[1];
+		String temperature = attributes[2];
+		String quality = attributes[3];
+		return new Data(time, temperature, quality);
+	}
+
+
 	/**
 	 * Search for average temperature for all dates between the two dates (inclusive).
 	 * Result is sorted by date (ascending). When searching from 2000-01-01 to 2000-01-03
@@ -54,8 +76,17 @@ public class WeatherDataHandler {
 	 * @return average temperature for each date, sorted by date  
 	 */
 	public List<String> averageTemperatures(LocalDate dateFrom, LocalDate dateTo) {
-		//TODO: Implements method
-		return null;
+
+		NavigableMap<LocalDate, Data> whetherSubMap;
+		whetherSubMap = whetherData.subMap(dateFrom, true, dateTo,true);
+		List<String> average = new ArrayList<>();
+
+		for (Map.Entry<LocalDate, Data> entry : whetherSubMap.entrySet()){
+			average.add(entry.getKey() + " average temperature: "
+					+ entry.getValue().averageDataTemperature() + " degrees Celsius");
+		}
+
+		return average;
 	}
 	/**
 	 * Search for missing values between the two dates (inclusive) assuming there 

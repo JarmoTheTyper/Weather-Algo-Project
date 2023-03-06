@@ -1,95 +1,95 @@
 package algo.weatherdata;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Create an objekt of an isolated instance of whether data
  */
 public class Data {
-    private String date;
-    private String time;
-    private String temperature;
-    private String quality;
+    private final List<String> time = new ArrayList<>();
+    private final List<String> temperature = new ArrayList<>();
+    private final List<String> quality = new ArrayList<>();
 
     /**
      * Construct a data objekt
-     * @param date The date of the whether data instance
      * @param time The time of the whether data instance
      * @param temperature The temperature of the whether data instance
      * @param quality The quality of the whether data instance
      */
-    public Data(String date, String time, String temperature, String quality){
-        this.date = date;
-        this.time = time;
-        this.temperature = temperature;
-        this.quality = quality;
+    public Data(String time, String temperature, String quality){
+        this.time.add(time);
+        this.temperature.add(temperature);
+        this.quality.add(quality);
+    }
+
+    public Data(){
+
     }
 
     /**
-     *  Gets the Date
-     * @return date of instance
+     * Calculates the average temperature of the list temperature
+     * @return the average temperature of the list temperature
      */
-    public String getDate(){
-        return this.date;
+    public String averageDataTemperature(){
+        double sum = 0;
+        for(String temp : temperature){
+            sum += Double.parseDouble(temp);
+        }
+        return String.format("%.2f", sum / temperature.size());
     }
 
     /**
-     * Gets the Time
-     * @return time of instance
+     * Getts the list of time values
+     * @return the list of time values
      */
-    public String getTime(){
-        return this.time;
+    public List<String> getTime(){
+        return time;
     }
 
     /**
-     * Gets the Temperature
-     * @return temperature of instance
+     * Getts the list of temperature values
+     * @return the list of temperature values
      */
-    public String getTemperature(){
-        return this.temperature;
+    public List<String> getTemperatures(){
+        return temperature;
     }
 
     /**
-     * Gets the Quality
-     * @return quality of instance
+     * Getts the list of quality values
+     * @return the list of quality values
      */
-    public String getQuality() {
+    public List<String> getQuality(){
         return quality;
     }
 
     /**
-     * Sets the Date
-     * @param date the date to set
-     */
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    /**
-     * Sets the Time
+     * Adds the Time
      * @param time the time to set
      */
-    public void setTime(String time) {
-        this.time = time;
+    public void addTime(String time) {
+        this.time.add(time);
     }
 
     /**
-     * Sets the Temperature
+     * Adds the Temperature
      * @param temperature the temperature to set
      */
-    public void setTemperature(String temperature) {
-        this.temperature = temperature;
+    public void addTemperature(String temperature) {
+        this.temperature.add(temperature);
     }
 
     /**
      * Sets the Quality
      * @param quality the quality to set
      */
-    public void setQuality(String quality) {
-        this.quality = quality;
+    public void addQuality(String quality) {
+        this.quality.add(quality);
     }
 
     @Override
     public String toString(){
-        return "Date: " + date + ", Time: " + time + ", Temperature: " + temperature + ", Quality: " + quality;
+        return ", Time: " + time + ", Temperature: " + temperature + ", Quality: " + quality;
     }
 }
