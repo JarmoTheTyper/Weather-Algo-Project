@@ -41,13 +41,10 @@ public class WeatherDataHandler {
 	 * Adds values to a Data Object
 	 * @param attributes Array of String values to be added to the Data object
 	 */
-	private static void addData(String[] attributes, Data data){
-		String time = attributes[1];
-		String temperature = attributes[2];
-		String quality = attributes[3];
-		data.addTime(time);
-		data.addTemperature(temperature);
-		data.addQuality(quality);
+	private static void addData(String[] attributes, Data data){ //TODO: kan behöva ändras
+		data.addTime(attributes[1]);
+		data.addTemperature(attributes[2]);
+		data.addQuality(attributes[3]);
 	}
 
 	/**
@@ -55,10 +52,11 @@ public class WeatherDataHandler {
 	 * @param attributes Array of String values to be added to the Data object
 	 * @return object Data with the attributes as values
 	 */
-	private static Data createData(String[] attributes) {
+	private static Data createData(String[] attributes) { //TODO: kan behöva ändras
 		String time = attributes[1];
 		String temperature = attributes[2];
 		String quality = attributes[3];
+
 		return new Data(time, temperature, quality);
 	}
 
@@ -77,14 +75,16 @@ public class WeatherDataHandler {
 	 */
 	public List<String> averageTemperatures(LocalDate dateFrom, LocalDate dateTo) {
 
-		NavigableMap<LocalDate, Data> whetherSubMap;
-		whetherSubMap = whetherData.subMap(dateFrom, true, dateTo,true);
 		List<String> average = new ArrayList<>();
 
-		for (Map.Entry<LocalDate, Data> entry : whetherSubMap.entrySet()){
+		for (Map.Entry<LocalDate, Data> entry : whetherData.subMap(dateFrom, true, dateTo,true).entrySet()){
 			average.add(entry.getKey() + " average temperature: "
 					+ entry.getValue().averageDataTemperature() + " degrees Celsius");
 		}
+
+		//TODO: Lägg till submap av data i en lista
+		//TODO: sortera listan i efterhand på missing values
+		//TODO: Lägg över till en ny eller skriv om arrayen till en string och lägg till texten
 
 		return average;
 	}
@@ -102,6 +102,21 @@ public class WeatherDataHandler {
 	 * @return dates with missing values together with number of missing values for each date, sorted by number of missing values (descending)
 	 */
 	public List<String> missingValues(LocalDate dateFrom, LocalDate dateTo) {
+
+
+		List<Data> missingList = new ArrayList<>();
+		int idealQuantity = 24;
+
+
+		for (Map.Entry<LocalDate, Data> entry : whetherData.subMap(dateFrom, true, dateTo,true).entrySet()){
+			//TODO: Lägg till submap av data i en lista
+			//TODO: sortera listan i efterhand på missing values
+			//TODO: Lägg över till en ny eller skriv om arrayen till en string och lägg till texten
+		}
+
+		//TODO: Lägg i lista
+		//TODO: Sortera lista
+
 		//TODO: Implements method
 		return null;
 	}
