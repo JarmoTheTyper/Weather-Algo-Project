@@ -11,7 +11,6 @@ public class Data {
     private final List<String> time = new ArrayList<>();
     private final List<String> temperature = new ArrayList<>();
     private final List<String> quality = new ArrayList<>();
-    private final int missingValue = missingDataValue();
 
     /**
      * Construct a data objekt
@@ -41,9 +40,10 @@ public class Data {
         return String.format("%.2f", sum / temperature.size());
     }
 
-    private int missingDataValue(){
+    private String missingDataValue(){
         int reference = 24;
-        return reference - time.size();
+        int tmp = reference - time.size();
+        return String.valueOf(tmp);
     }
 
     /**
@@ -72,10 +72,11 @@ public class Data {
 
     /**
      * Getts the quantity of missing values
+     *
      * @return the value of missingDataValues
      */
-    public int getMissingValue(){
-        return missingValue;
+    public String getMissingValue(){
+        return missingDataValue();
     }
 
     /**

@@ -1,17 +1,20 @@
 package algo.weatherdata;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.*;
 
+import static java.util.Map.Entry.comparingByKey;
+
 /**
  * Retrieves temperature data from a weather station file.
  */
 public class WeatherDataHandler {
 
-	TreeMap<LocalDate, Data> whetherData = new TreeMap<>();
+	TreeMap<LocalDate, Data> weatherData = new TreeMap<>();
 
 	/**
 	 * Load weather data from file.
@@ -27,12 +30,12 @@ public class WeatherDataHandler {
 			String[] attributes = s.split(";");
 			LocalDate date = LocalDate.parse(attributes[0]);
 
-			if (whetherData.containsKey(date)) {
-				addData(attributes, whetherData.get(date));
+			if (weatherData.containsKey(date)) {
+				addData(attributes, weatherData.get(date));
 			}
 			else{
 				Data data = createData(attributes);
-				whetherData.put(date, data);
+				weatherData.put(date, data);
 			}
 		}
 	}
@@ -77,14 +80,10 @@ public class WeatherDataHandler {
 
 		List<String> average = new ArrayList<>();
 
-		for (Map.Entry<LocalDate, Data> entry : whetherData.subMap(dateFrom, true, dateTo,true).entrySet()){
+		for (Map.Entry<LocalDate, Data> entry : weatherData.subMap(dateFrom, true, dateTo,true).entrySet()){
 			average.add(entry.getKey() + " average temperature: "
 					+ entry.getValue().averageDataTemperature() + " degrees Celsius");
 		}
-
-		//TODO: Lägg till submap av data i en lista
-		//TODO: sortera listan i efterhand på missing values
-		//TODO: Lägg över till en ny eller skriv om arrayen till en string och lägg till texten
 
 		return average;
 	}
@@ -101,24 +100,29 @@ public class WeatherDataHandler {
 	 * @param dateTo end date (YYYY-MM-DD) inclusive
 	 * @return dates with missing values together with number of missing values for each date, sorted by number of missing values (descending)
 	 */
-	public List<String> missingValues(LocalDate dateFrom, LocalDate dateTo) {
+	public List<String> missingValues(LocalDate dateFrom, LocalDate dateTo) {//TODO: Försök få bort antalet listor och mappar
+
+		Map<LocalDate, Data> subMap = weatherData.subMap(dateFrom, true, dateTo,true);
+
+		Map<LocalDate, String> tmp = new TreeMap<>();
 
 
-		List<Data> missingList = new ArrayList<>();
-		int idealQuantity = 24;
+		for (Map.Entry<LocalDate, Data> entry :subMap.entrySet()){
+			tmp.put(entry.getKey(), entry.getValue().getMissingValue());
 
+		}
+		List<Map.Entry<LocalDate, String>> missingList = new ArrayList<>(tmp.entrySet());
 
-		for (Map.Entry<LocalDate, Data> entry : whetherData.subMap(dateFrom, true, dateTo,true).entrySet()){
-			//TODO: Lägg till submap av data i en lista
-			//TODO: sortera listan i efterhand på missing values
-			//TODO: Lägg över till en ny eller skriv om arrayen till en string och lägg till texten
+		missingList.sort(Comparator.comparing(Map.Entry<LocalDate, String> :: getValue)
+				.reversed().thenComparing(Map.Entry :: getKey));
+
+		List<String> missing = new ArrayList<>();
+
+		for(Map.Entry<LocalDate, String> entry : missingList){
+			missing.add(entry.getKey() + " missing " + entry.getValue() + " values");
 		}
 
-		//TODO: Lägg i lista
-		//TODO: Sortera lista
-
-		//TODO: Implements method
-		return null;
+		return missing;
 	}
 	/**
 	 * Search for percentage of approved values between the two dates (inclusive).
