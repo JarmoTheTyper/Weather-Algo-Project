@@ -1,20 +1,21 @@
 package algo.weatherdata;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.*;
 
-import static java.util.Map.Entry.comparingByKey;
 
 /**
  * Retrieves temperature data from a weather station file.
  */
 public class WeatherDataHandler {
 
-	TreeMap<LocalDate, Data> weatherData = new TreeMap<>();
+	private static final DecimalFormat df = new DecimalFormat("0.00");
+
+	private final TreeMap<LocalDate, Data> weatherData = new TreeMap<>();
 
 	/**
 	 * Load weather data from file.
@@ -34,7 +35,8 @@ public class WeatherDataHandler {
 				addData(attributes, weatherData.get(date));
 			}
 			else{
-				Data data = createData(attributes);
+				Data data = new Data();
+				addData(attributes, data);
 				weatherData.put(date, data);
 			}
 		}
@@ -44,25 +46,11 @@ public class WeatherDataHandler {
 	 * Adds values to a Data Object
 	 * @param attributes Array of String values to be added to the Data object
 	 */
-	private static void addData(String[] attributes, Data data){ //TODO: kan behöva ändras
+	private static void addData(String[] attributes, Data data){
 		data.addTime(attributes[1]);
 		data.addTemperature(attributes[2]);
 		data.addQuality(attributes[3]);
 	}
-
-	/**
-	 * Creates an object of Data
-	 * @param attributes Array of String values to be added to the Data object
-	 * @return object Data with the attributes as values
-	 */
-	private static Data createData(String[] attributes) { //TODO: kan behöva ändras
-		String time = attributes[1];
-		String temperature = attributes[2];
-		String quality = attributes[3];
-
-		return new Data(time, temperature, quality);
-	}
-
 
 	/**
 	 * Search for average temperature for all dates between the two dates (inclusive).
@@ -79,10 +67,9 @@ public class WeatherDataHandler {
 	public List<String> averageTemperatures(LocalDate dateFrom, LocalDate dateTo) {
 
 		List<String> average = new ArrayList<>();
-
 		for (Map.Entry<LocalDate, Data> entry : weatherData.subMap(dateFrom, true, dateTo,true).entrySet()){
 			average.add(entry.getKey() + " average temperature: "
-					+ entry.getValue().averageDataTemperature() + " degrees Celsius");
+					+ df.format(entry.getValue().averageDataTemperature()) + " degrees Celsius");
 		}
 
 		return average;
@@ -100,25 +87,22 @@ public class WeatherDataHandler {
 	 * @param dateTo end date (YYYY-MM-DD) inclusive
 	 * @return dates with missing values together with number of missing values for each date, sorted by number of missing values (descending)
 	 */
-	public List<String> missingValues(LocalDate dateFrom, LocalDate dateTo) {//TODO: Försök få bort antalet listor och mappar
+	public List<String> missingValues(LocalDate dateFrom, LocalDate dateTo) {
 
-		Map<LocalDate, Data> subMap = weatherData.subMap(dateFrom, true, dateTo,true);
-
-		Map<LocalDate, String> tmp = new TreeMap<>();
-
-
+		int hours = 24;
+		Map<LocalDate, Integer> tmp = new TreeMap<>();
+		NavigableMap<LocalDate, Data> subMap= weatherData.subMap(dateFrom, true, dateTo,true);
 		for (Map.Entry<LocalDate, Data> entry :subMap.entrySet()){
-			tmp.put(entry.getKey(), entry.getValue().getMissingValue());
-
+			int mis = hours - entry.getValue().getTime().size();
+			tmp.put(entry.getKey(), mis);
 		}
-		List<Map.Entry<LocalDate, String>> missingList = new ArrayList<>(tmp.entrySet());
 
-		missingList.sort(Comparator.comparing(Map.Entry<LocalDate, String> :: getValue)
+		List<Map.Entry<LocalDate, Integer>> missingList = new ArrayList<>(tmp.entrySet());
+		missingList.sort(Comparator.comparing(Map.Entry<LocalDate, Integer> :: getValue)
 				.reversed().thenComparing(Map.Entry :: getKey));
 
 		List<String> missing = new ArrayList<>();
-
-		for(Map.Entry<LocalDate, String> entry : missingList){
+		for(Map.Entry<LocalDate, Integer> entry : missingList){
 			missing.add(entry.getKey() + " missing " + entry.getValue() + " values");
 		}
 
@@ -134,7 +118,21 @@ public class WeatherDataHandler {
 	 * @return period and percentage of approved values for the period  
 	 */
 	public List<String> approvedValues(LocalDate dateFrom, LocalDate dateTo) {
-		//TODO: Implements method
-		return null;
+		double sumSize = 0;
+		double countApproved = 0;
+
+		NavigableMap<LocalDate, Data> subMap= weatherData.subMap(dateFrom, true, dateTo,true);
+		for (Map.Entry<LocalDate, Data> entry :subMap.entrySet()){
+			sumSize += entry.getValue().getQuality().size();
+
+			for(String c: entry.getValue().getQuality()){
+				if(c.equals("G")) countApproved += 1;
+			}
+		}
+		double approved = countApproved/sumSize * 100;
+		List<String> answer = new ArrayList<>();
+		String result = "Approved values between " + dateFrom + " and " + dateTo + ": " + df.format(approved) + " %";
+		answer.add(result);
+		return answer;
 	}
 }

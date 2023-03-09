@@ -24,6 +24,9 @@ public class Data {
         this.quality.add(quality);
     }
 
+    /**
+     * Construct a data objekt
+     */
     public Data(){
 
     }
@@ -32,18 +35,12 @@ public class Data {
      * Calculates the average temperature of the list temperature and rounds the value
      * @return the average temperature of the list temperature
      */
-    public String averageDataTemperature(){ //TODO: kan behöva lägga till instansvariabel för att hantera sortering
+    public double averageDataTemperature(){
         double sum = 0;
         for(String temp : temperature){
             sum += Double.parseDouble(temp);
         }
-        return String.format("%.2f", sum / temperature.size());
-    }
-
-    private String missingDataValue(){
-        int reference = 24;
-        int tmp = reference - time.size();
-        return String.valueOf(tmp);
+        return sum / temperature.size();
     }
 
     /**
@@ -68,15 +65,6 @@ public class Data {
      */
     public List<String> getQuality(){
         return quality;
-    }
-
-    /**
-     * Getts the quantity of missing values
-     *
-     * @return the value of missingDataValues
-     */
-    public String getMissingValue(){
-        return missingDataValue();
     }
 
     /**
